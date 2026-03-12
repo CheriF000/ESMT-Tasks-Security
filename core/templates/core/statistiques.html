@@ -1,0 +1,58 @@
+{% extends 'core/base.html' %}
+{% block title %}Statistiques{% endblock %}
+{% block content %}
+<h2 class="mb-4"><i class="fas fa-chart-bar me-2"></i>Statistiques {{ annee }} — Trimestre {{ trimestre }}</h2>
+
+<div class="table-responsive">
+    <table class="table table-hover bg-white rounded shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Professeur</th>
+                <th>Tâches (année)</th>
+                <th>Terminées</th>
+                <th>Dans les délais</th>
+                <th>Taux</th>
+                <th>Tâches (trimestre)</th>
+                <th>Terminées (trim.)</th>
+                <th>Prime</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in stats %}
+            <tr>
+                <td><strong>{{ s.user.username }}</strong></td>
+                <td>{{ s.total_annee }}</td>
+                <td>{{ s.terminees_annee }}</td>
+                <td>{{ s.dans_delai_annee }}</td>
+                <td>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar
+                            {% if s.taux_annee == 100 %}bg-success
+                            {% elif s.taux_annee >= 90 %}bg-warning
+                            {% else %}bg-danger{% endif %}"
+                            style="width: {{ s.taux_annee }}%">
+                            {{ s.taux_annee }}%
+                        </div>
+                    </div>
+                </td>
+                <td>{{ s.total_trim }}</td>
+                <td>{{ s.terminees_trim }}</td>
+                <td>
+                    {% if s.prime == 100000 %}
+                        <span class="badge bg-success fs-6">100 000 FCFA 🏆</span>
+                    {% elif s.prime == 30000 %}
+                        <span class="badge bg-warning fs-6">30 000 FCFA ⭐</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Pas de prime</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="text-center text-muted">Aucun professeur trouvé.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

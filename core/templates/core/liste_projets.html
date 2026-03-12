@@ -1,0 +1,57 @@
+{% extends 'core/base.html' %}
+{% block title %}Mes Projets{% endblock %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2><i class="fas fa-project-diagram me-2"></i>Mes Projets</h2>
+    </div>
+    <div class="col text-end">
+        <a href="{% url 'creer_projet' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Nouveau projet
+        </a>
+    </div>
+</div>
+
+<h5 class="text-muted mb-3">Projets que j'ai créés</h5>
+<div class="row mb-5">
+    {% for projet in projets_crees %}
+    <div class="col-md-4 mb-3">
+        <div class="card p-3">
+            <h5>{{ projet.titre }}</h5>
+            <p class="text-muted small">{{ projet.description|truncatechars:80 }}</p>
+            <p class="small"><i class="fas fa-users me-1"></i>{{ projet.membres.count }} membre(s)</p>
+            <p class="small"><i class="fas fa-tasks me-1"></i>{{ projet.taches.count }} tâche(s)</p>
+            <div class="d-flex gap-2 mt-2">
+                <a href="{% url 'detail_projet' projet.pk %}" class="btn btn-sm btn-primary">Voir</a>
+                <a href="{% url 'modifier_projet' projet.pk %}" class="btn btn-sm btn-warning">Modifier</a>
+                <a href="{% url 'supprimer_projet' projet.pk %}" class="btn btn-sm btn-danger">Supprimer</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col">
+        <p class="text-muted">Vous n'avez pas encore créé de projet.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<h5 class="text-muted mb-3">Projets où je suis membre</h5>
+<div class="row">
+    {% for projet in projets_membres %}
+    <div class="col-md-4 mb-3">
+        <div class="card p-3">
+            <h5>{{ projet.titre }}</h5>
+            <p class="text-muted small">{{ projet.description|truncatechars:80 }}</p>
+            <p class="small"><i class="fas fa-user me-1"></i>Créé par {{ projet.createur.username }}</p>
+            <div class="mt-2">
+                <a href="{% url 'detail_projet' projet.pk %}" class="btn btn-sm btn-primary">Voir</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col">
+        <p class="text-muted">Vous n'êtes membre d'aucun projet.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

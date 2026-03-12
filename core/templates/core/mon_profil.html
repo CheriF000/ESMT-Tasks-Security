@@ -1,0 +1,38 @@
+{% extends 'core/base.html' %}
+{% block title %}Mon Profil{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card p-4 text-center">
+            <!-- Avatar -->
+            {% if profil.avatar %}
+                <img src="{{ profil.avatar.url }}" alt="avatar"
+                     class="rounded-circle mb-3" style="width:100px; height:100px; object-fit:cover;">
+            {% else %}
+                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-3"
+                     style="width:100px; height:100px;">
+                    <i class="fas fa-user fa-3x text-white"></i>
+                </div>
+            {% endif %}
+
+            <h3>{{ profil.user.get_full_name|default:profil.user.username }}</h3>
+            <span class="badge bg-primary mb-3">{{ profil.role }}</span>
+
+            <hr>
+
+            <div class="text-start">
+                <p><i class="fas fa-user me-2 text-primary"></i><strong>Username :</strong> {{ profil.user.username }}</p>
+                <p><i class="fas fa-envelope me-2 text-primary"></i><strong>Email :</strong> {{ profil.user.email|default:"Non renseigné" }}</p>
+                <p><i class="fas fa-info-circle me-2 text-primary"></i><strong>Bio :</strong> {{ profil.bio|default:"Aucune bio" }}</p>
+            </div>
+
+            <a href="{% url 'modifier_profil' %}" class="btn btn-primary mt-3">
+                <i class="fas fa-edit me-2"></i>Modifier mon profil
+            </a>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary mt-3 ms-2">
+                <i class="fas fa-home me-2"></i>Retour
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

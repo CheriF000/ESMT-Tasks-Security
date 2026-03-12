@@ -1,0 +1,76 @@
+{% extends 'core/base.html' %}
+{% block title %}Mes Tâches{% endblock %}
+{% block content %}
+<h2 class="mb-4"><i class="fas fa-tasks me-2"></i>Mes Tâches</h2>
+
+<!-- Barre de recherche et filtres -->
+<div class="card p-3 mb-4">
+    <form method="get" class="row g-3">
+        <div class="col-md-4">
+            <input type="text" name="q" class="form-control"
+                   placeholder="Rechercher une tâche..."
+                   value="{{ recherche|default:'' }}">
+        </div>
+        <div class="col-md-3">
+            <select name="statut" class="form-select">
+                <option value="">Tous les statuts</option>
+                <option value="a_faire" {% if statut_actif == 'a_faire' %}selected{% endif %}>À faire</option>
+                <option value="en_cours" {% if statut_actif == 'en_cours' %}selected{% endif %}>En cours</option>
+                <option value="termine" {% if statut_actif == 'termine' %}selected{% endif %}>Terminé</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="projet" class="form-select">
+                <option value="">Tous les projets</option>
+                {% for p in projets %}
+                <option value="{{ p.pk }}" {% if projet_actif == p.pk|stringformat:"s" %}selected{% endif %}>
+                    {{ p.titre }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-search me-1"></i>Filtrer
+            </button>
+        </div>
+    </form>
+    {% if statut_actif or projet_actif or recherche %}
+    <div class="mt-2">
+        <a href="{% url 'mes_taches' %}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-times me-1"></i>Effacer les filtres
+        </a>
+        <span class="text-muted ms-2">{{ taches.count }} résultat(s)</span>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Liste des tâches -->
+<div class="row">
+    {% for tache in taches %}
+    <div class="col-md-4 mb-3">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between">
+                <h6>{{ tache.titre }}</h6>
+                <span class="badge
+                    {% if tache.statut == 'termine' %}bg-success
+                    {% elif tache.statut == 'en_cours' %}bg-warning
+                    {% else %}bg-secondary{% endif %}">
+                    {{ tache.get_statut_display }}
+                </span>
+            </div>
+            <p class="text-muted small">{{ tache.description|truncatechars:60 }}</p>
+            <p class="small"><i class="fas fa-project-diagram me-1"></i>{{ tache.projet.titre }}</p>
+            <p class="small"><i class="fas fa-calendar me-1"></i>{{ tache.date_limite }}</p>
+            <a href="{% url 'modifier_tache' tache.pk %}" class="btn btn-sm btn-warning mt-2">
+                Modifier le statut
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col">
+        <p class="text-muted">Aucune tâche trouvée.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
