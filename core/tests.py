@@ -1,19 +1,22 @@
 import pytest
+import os
 from django.contrib.auth.models import User
 from django.urls import reverse
 from .models import Profil, Projet, Tache
 from datetime import date
 
+TEST_PASSWORD = os.environ.get('TEST_PASSWORD', 'T3stP@ssw0rd!')
+TEST_PASSWORD_2 = os.environ.get('TEST_PASSWORD_2', 'C0mpl3xP@ss!')
 
 @pytest.fixture
 def user(db):
-    user = User.objects.create_user(username='testuser', password='test1234')
+    user = User.objects.create_user(username='testuser', password=TEST_PASSWORD)
     Profil.objects.create(user=user, role='professeur')
     return user
 
 @pytest.fixture
 def etudiant(db):
-    user = User.objects.create_user(username='etudiant1', password='test1234')
+    user = User.objects.create_user(username='etudiant1', password=TEST_PASSWORD)
     Profil.objects.create(user=user, role='etudiant')
     return user
 
@@ -30,8 +33,6 @@ def tache(db, projet, user):
         statut='a_faire',
         assigne_a=user
     )
-
-
 
 class TestModeles:
     def test_creation_profil(self, user):
@@ -57,16 +58,14 @@ class TestModeles:
         tache.save()
         assert tache.est_termine_dans_delai() == False
 
-
-
 class TestVues:
     def test_inscription(self, client, db):
         response = client.post(reverse('inscription'), {
             'username': 'newuser',
             'email': 'new@test.com',
             'role': 'etudiant',
-            'password1': 'complexpass123',
-            'password2': 'complexpass123',
+            'password1': TEST_PASSWORD_2,
+            'password2': TEST_PASSWORD_2,
         })
         assert response.status_code == 302
         assert User.objects.filter(username='newuser').exists()
@@ -74,21 +73,21 @@ class TestVues:
     def test_connexion(self, client, user):
         response = client.post(reverse('connexion'), {
             'username': 'testuser',
-            'password': 'test1234',
+            'password': TEST_PASSWORD,
         })
         assert response.status_code == 302
 
     def test_dashboard_non_connecte(self, client):
         response = client.get(reverse('dashboard'))
-        assert response.status_code == 302  # redirige vers login
+        assert response.status_code == 302
 
     def test_dashboard_connecte(self, client, user):
-        client.login(username='testuser', password='test1234')
+        client.login(username='testuser', password=TEST_PASSWORD)
         response = client.get(reverse('dashboard'))
         assert response.status_code == 200
 
     def test_creer_projet(self, client, user):
-        client.login(username='testuser', password='test1234')
+        client.login(username='testuser', password=TEST_PASSWORD)
         response = client.post(reverse('creer_projet'), {
             'titre': 'Nouveau Projet',
             'description': 'Description test',
@@ -97,11 +96,9 @@ class TestVues:
         assert Projet.objects.filter(titre='Nouveau Projet').exists()
 
     def test_supprimer_projet_non_createur(self, client, etudiant, projet):
-        client.login(username='etudiant1', password='test1234')
+        client.login(username='etudiant1', password=TEST_PASSWORD)
         response = client.post(reverse('supprimer_projet', args=[projet.pk]))
-        assert response.status_code == 404  # accès refusé
-
-
+        assert response.status_code == 404
 
 class TestPrimes:
     def test_prime_100k(self, tache, user):
