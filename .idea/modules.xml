@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/gestion_taches.iml" filepath="$PROJECT_DIR$/.idea/gestion_taches.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/ESMT-Tasks-Security.iml" filepath="$PROJECT_DIR$/.idea/ESMT-Tasks-Security.iml" />
     </modules>
   </component>
 </project>
