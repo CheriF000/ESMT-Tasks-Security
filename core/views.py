@@ -8,6 +8,8 @@ from django.utils import timezone
 from .forms import InscriptionForm, ProfilForm, ProjetForm, TacheForm
 from .models import Profil, Projet, Tache
 
+ACCES_REFUSE = 'Accès refusé.'
+
 
 def inscription(request):
     if request.method == 'POST':
@@ -119,7 +121,7 @@ def supprimer_projet(request, pk):
 def detail_projet(request, pk):
     projet = get_object_or_404(Projet, pk=pk)
     if request.user != projet.createur and request.user not in projet.membres.all():
-        messages.error(request, 'Accès refusé.')
+        messages.error(request, ACCES_REFUSE)
         return redirect('liste_projets')
     taches = projet.taches.all()
     return render(request, 'core/detail_projet.html', {'projet': projet, 'taches': taches})
@@ -146,7 +148,7 @@ def modifier_tache(request, pk):
     tache = get_object_or_404(Tache, pk=pk)
     projet = tache.projet
     if request.user != projet.createur and request.user != tache.assigne_a:
-        messages.error(request, 'Accès refusé.')
+        messages.error(request, ACCES_REFUSE)
         return redirect('detail_projet', pk=projet.pk)
     if request.method == 'POST':
         form = TacheForm(request.POST, instance=tache, projet=projet, user=request.user)
@@ -164,7 +166,7 @@ def supprimer_tache(request, pk):
     tache = get_object_or_404(Tache, pk=pk)
     projet = tache.projet
     if request.user != projet.createur:
-        messages.error(request, 'Accès refusé.')
+        messages.error(request, ACCES_REFUSE)
         return redirect('detail_projet', pk=projet.pk)
     if request.method == 'POST':
         tache.delete()
